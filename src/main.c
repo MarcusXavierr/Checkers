@@ -2,49 +2,80 @@
 //Marcus Vinicius Pereira Xavier
 //Turma 32
 
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
 #include "main.h"
+#include "colors.h"
+#include "jogador.h"
 
 void getMenuInput(int *choice, const char *message);
+void getInputFromUser(const char *message, char* input);
+void validateIfUserWantQuit(char *input);
 
 int main(int argc, char *argv[])
 {   
-
+    //Informações úteis para todo o programa;
+    Jogador jogador1, jogador2;
+    //
     // TODO: Depois de finalizar o menu, mover todo esse código para um arquivo chamado menu.c
-    int max_nome = 50;
     int escolha, qtd_jogadores;
-    char nome_jogador_1[50], nome_jogador_2[50];
+    
     printf("Bem vindo ao jogo de Damas\nO que deseja fazer:\n\n");
-    printf("1. Começar novo jogo\n2. Continuar um novo jogo\n");
+    printf("1. Começar novo jogo\n2. Continuar um novo jogo\n\n");
     getMenuInput(&escolha, "Escolha a opção (digite ”sair” em qualquer lugar para sair do jogo): ");
-    if(escolha == 2) ;//TODO: Pegar o input do usuario pra abrir o txt e continuar o jogo
-    getMenuInput(&qtd_jogadores, "Digite a quantidade de jogadores <1 / 2 >: ");
-    if(qtd_jogadores == 2)
+    if(escolha == 1)
     {
-        getchar();
-        printf("Digite o nome do Jogador 1 (pedra branca - “o”): ");
-        scanf("%[^\n]%*c",nome_jogador_1);
-        printf("Digite o nome do Jogador 2 (pedra escura - “x”): ");
-        scanf("%[^\n]%*c",nome_jogador_2);
+        getMenuInput(&qtd_jogadores, "Digite a quantidade de jogadores <1 / 2 >: ");
+        if(qtd_jogadores == 1){
+            getInputFromUser("Digite o nome do Jogador 1 (pedra branca - “o”): ", jogador1.nome);     
+        }
+        else{
+            getInputFromUser("Digite o nome do Jogador 1 (pedra branca - “o”): ", jogador1.nome);
+            getInputFromUser("Digite o nome do Jogador 2 (pedra escura - “x”): ", jogador2.nome);
+        }
     }
-    printf("%s\n%s\n",nome_jogador_1, nome_jogador_2);
+    if(escolha == 2)
+    {
+        char nome_arquivo[MAX_INPUT];
+        getInputFromUser("Digite o nome do arquivo: ", nome_arquivo);
+        // TODO: Implementar lógica para pegar os dados do jogo salvo. Mas antes você precisa ter um jogo para salvar
+    }
+    
+    printf("%s\n%s\n",jogador1.nome, jogador2.nome); //* Só pra testar mesmo
     return 0;
 }
 
 void getMenuInput(int *choice, const char *message)
 {   
-    int _choice = 0;
-    printf(message);
-    errorMenuInput:
-    scanf("%d", &_choice);
-    if(_choice != 1 && _choice != 2 && !isdigit(_choice))
-    {   
-        printf("Erro ao processar seu input, por favor, digite novamente\n");
-        printf(message);
-        getchar();
-        goto errorMenuInput;
+    char *input = malloc(sizeof(char) * MAX_INPUT);
+    getInputFromUser(message, input);
+    // validateIfUserWantQuit(input);
+    while(input[0] != '1' && input[0] != '2'){ //Tô recebendo char e não inteiro
+        printf(BOLD("\nVocê digitou uma informação errada, por favor digite novamente\n"));
+        getInputFromUser(message, input);
     }
-    *choice = _choice;
-    
+    if(input[0] == '1') *choice = 1;
+    else *choice = 2;
         
+}
+
+
+void getInputFromUser(const char *message, char* input)
+{
+    printf("%s", message);
+    fgets(input, MAX_INPUT, stdin);
+    input[strcspn(input, "\n")] = '\0';
+    validateIfUserWantQuit(input);
+}
+
+void validateIfUserWantQuit(char *input)
+{
+    int result = strcmp(input, "sair");
+    if(result == 0)
+    {
+        printf("Tchau!\n");
+        exit(0);
+    }
 }
