@@ -39,7 +39,6 @@ void getMenuInput(int *choice, const char *message)
 {   
     char *input = malloc(sizeof(char) * MAX_INPUT);
     getInputFromUser(message, input);
-    // validateIfUserWantQuit(input);
     while(input[0] != '1' && input[0] != '2'){ //Tô recebendo char e não inteiro
         printf(BOLD("\nVocê digitou uma informação errada, por favor digite novamente\n"));
         getInputFromUser(message, input);
