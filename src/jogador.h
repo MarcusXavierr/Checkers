@@ -13,7 +13,7 @@ typedef struct {
 } Jogador;
 
 void getInputFromUser(const char *message, char* input);
-void validateIfUserWantQuit(char *input);
+void validateIfUserWannaQuit(char *input);
 int **criaMatriz(int m, int n);
 void preencherMatriz(int ***matriz, char tipo);
 
