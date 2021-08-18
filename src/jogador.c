@@ -12,10 +12,10 @@ void getInputFromUser(const char *message, char* input)
     printf("%s", message);
     fgets(input, MAX_INPUT, stdin);
     input[strcspn(input, "\n")] = '\0';
-    validateIfUserWantQuit(input);
+    validateIfUserWannaQuit(input);
 }
 
-void validateIfUserWantQuit(char *input)
+void validateIfUserWannaQuit(char *input)
 {
     int result = strcmp(input, "sair");
     if(result == 0)
