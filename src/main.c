@@ -12,8 +12,7 @@
 #include "menu.h"
 #include "jogo.h"
 
-void jogada(Jogador *jogador);
-// void printarTabuleiro(Jogador player1, Jogador player2);
+
 int main(int argc, char *argv[])
 {   
     //Informações úteis para todo o programa;
@@ -32,25 +31,10 @@ int main(int argc, char *argv[])
         else{
             jogada(&jogador2);
         }
-        
+        desenharTabuleiro(jogador1, jogador2);
     }
     printf("%s\n%s\n",jogador1.nome, jogador2.nome); //* Só pra testar mesmo
     
     return 0;
 }
 
-void jogada(Jogador *jogador)
-{
-    char message[50], input[50];
-    char c1, c2;
-    int i1, i2, qtd_input;
-    sprintf(message, "%s, é a sua vez: ", jogador->nome);
-    getInputFromUser(message, input);
-    qtd_input = sscanf(input,"%c%d %c%d", &c1, &i1, &c2, &i2);
-    while(qtd_input != 4){
-        printf("Por favor, insira um input válido\n");
-        getInputFromUser(message, input);
-        qtd_input = sscanf(input,"%c%d %c%d", &c1, &i1, &c2, &i2);
-    }
-    printf("Sua jogada %c%d %c%d\n", c1,i1,c2,i2);
-}
