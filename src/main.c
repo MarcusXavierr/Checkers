@@ -26,10 +26,10 @@ int main(int argc, char *argv[])
     for(int i = 0; i < 8; i++)
     {
         if(i % 2 == 0){
-            jogada(&jogador1);
+            jogada(&jogador1, &jogador2);
         }
         else{
-            jogada(&jogador2);
+            jogada(&jogador2, &jogador1);
         }
         desenharTabuleiro(jogador1, jogador2);
     }
