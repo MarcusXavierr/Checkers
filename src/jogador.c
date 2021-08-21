@@ -3,6 +3,7 @@
 //Turma 32
 
 #include "jogador.h"
+#include "jogo.h"
 #include "utils/constants.h"
 #include <stdio.h>
 #include <string.h>
@@ -29,13 +30,13 @@ void preencherMatriz(int ***matriz, char tipo)
 {
     int linhas = 12;
     int itens = 3;
-    int matrizx[12][3] = {0,0,'x',0,2,'x',0,4,'x',0,6,'x',
-                          1,1,'x',1,3,'x',1,5,'x',1,7,'x',
-                          2,0,'x',2,2,'x',2,4,'x',2,6,'x'};
+    int matrizx[12][3] = {0,1,'x',0,3,'x',0,5,'x',0,7,'x',
+                          1,0,'x',1,2,'x',1,4,'x',1,6,'x',
+                          2,1,'x',2,3,'x',2,5,'x',2,7,'x'};
 
-    int matrizo[12][3] = {5,1,'o',5,3,'o',5,5,'o',5,7,'o',
-                          6,0,'o',6,2,'o',6,4,'o',6,6,'o',
-                          7,1,'o',7,3,'o',7,5,'o',7,7,'o'};
+    int matrizo[12][3] = {5,0,'o',5,2,'o',5,4,'o',5,6,'o',
+                          6,1,'o',6,3,'o',6,5,'o',6,7,'o',
+                          7,0,'o',7,2,'o',7,4,'o',7,6,'o'};
                 
     int **C = criaMatriz(linhas,itens);
     if(tipo == 'x'){
@@ -67,3 +68,28 @@ int **criaMatriz(int m, int n)
     return matriz;
 }
 
+int validateInput(char *message, char *input, int *c1, int *c2, int *l1, int *l2, Jogador *jogador, Jogador *adversario, int *linha, char *tipo){
+    char Cl1, Cl2;
+    int tmp;
+    char adversario_type[1];
+    // gambiarra pra fazer a validação contra o adverário funcionar, sorry
+    getInputDuringGame(message, input, 0, *jogador, *adversario);
+    int qtd_input = sscanf(input,"%c%d %c%d", &Cl1, c1, &Cl2, c2);
+    if(qtd_input != 4) return 0; //* validate
+    *l1 = switchChar(Cl1);
+    *l2 = switchChar(Cl2);
+    *c1 = *c1 - 1; *c2 = *c2 - 1;
+    if(*l1 < 0 || *l2 < 0 || *c1 < 0 || *c2 < 0 || *c1 > 7 || *c2 > 7) return 0; //* validate
+    if(*c1 == *c2) return 0; //* validate
+    int exists = verifyIfPieceExists(*jogador, *l1, *c1, linha, tipo);
+    int espacoOcupado = verifyIfPieceExists(*adversario, *l2, *c2, &tmp, adversario_type);
+    if(!exists || espacoOcupado) return 0; // * validate
+    int distancia = calcularDistanciaMovimento(*l1, *c1, *l2, *c2);
+    if(*tipo == 'x' || *tipo == 'o'){
+        int ladoCerto = verifyIfDirectionIsRight(*l1, *l2, *tipo);
+        if(!ladoCerto) return 0; //* validate
+        if(distancia > 2) return 0; //* validate
+    }
+
+    return 1;
+}
