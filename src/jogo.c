@@ -24,7 +24,7 @@ void desenharTabuleiro(Jogador player1, Jogador player2)
         printf("%c ", c);
         for(int j = 0; j < 8; j++)
         {
-            if(i % 2 == 0){
+            if(i % 2 != 0){
                 if(j % 2 == 0){
                     printf(BG_WHITE(BLACK(" %c ")), matriz[i][j]);
                 }
@@ -49,13 +49,12 @@ void desenharTabuleiro(Jogador player1, Jogador player2)
 void jogada(Jogador *jogador, Jogador *adversario)
 {
     char message[50], input[50];
-    char Cl1, Cl2;
     int c1, c2, l1, l2, linha;
     int pieceExists = 0;
-    char tipo;
+    char *tipo = malloc(sizeof(char));
+    *tipo = '\0';
     sprintf(message, "%s, é a sua vez: ", jogador->nome);
-    lerJogada(message, input, &c1, &c2, &l1, &l2, &linha, &tipo, jogador, adversario);
-    // TODO: Verificar se o user está indo para trás, ou para frente
+    lerJogada(message, input, &c1, &c2, &l1, &l2, &linha, tipo, jogador, adversario);
     jogador->pecas[linha][0] = l2;
     jogador->pecas[linha][1] = c2;
     
@@ -77,38 +76,78 @@ int switchChar(char c) {
 void lerJogada(char *message, char *input, int *c1, int *c2, int *l1, int *l2, int *linha, char *tipo, Jogador *jogador, Jogador *adversario)
 {   
     int is_valid = 0, qtd_input;
-    char Cl1, Cl2;
-    int tmp;
-    char adversario_type[1];
-    getInputFromUser(message, input);
-    qtd_input = sscanf(input,"%c%d %c%d", &Cl1, c1, &Cl2, c2);
-    while(qtd_input != 4){
-        inputError:
-        printf("Por favor, insira um input válido\n");
-        getInputFromUser(message, input);
-        qtd_input = sscanf(input,"%c%d %c%d", &Cl1, c1, &Cl2, c2);
-    }
-    *l1 = switchChar(Cl1);
-    *l2 = switchChar(Cl2);
-    *c1 = *c1 - 1; *c2 = *c2 - 1;
-    if(*l1 < 0 || *l2 < 0 || *c1 < 0 || *c2 < 0 || *c1 > 7 || *c2 > 7) goto inputError;
-    int exists = verifyIfPieceExists(*jogador, *l1, *c1, linha, tipo);
-    int espacoOcupado = verifyIfPieceExists(*adversario, *l2, *c2, &tmp, adversario_type);
-    if(!exists || espacoOcupado) goto inputError;
-    int distancia = calcularDistanciaMovimento(*l1, *c1, *l2, *c2);
+    int result;
+    do{
+        result = validateInput(message, input, c1, c2,l1,l2, jogador, adversario, linha, tipo);
+        int isDama = verifyIfIsDama(*tipo);
+        if(isDama == -1) result = 0;
+        if(isDama == 0){
+            if(calcularDistanciaMovimento(*l1, *c1, *l2, *c2) == 2){
+                result = comerComPecaComum(jogador, adversario, *l1, *c1, *l2, *c2);
+            }
+        }
+        else if(isDama == 1){
+            result = comerComDama(jogador, adversario, *l1, *c1, *l2, *c2);
+        }
 
-    // TODO: ARRUMAR ESSA MASSAROCA DEPOIS
-    if(*tipo == 'x' || *tipo == 'o'){
-        int ladoCerto = verifyIfDirectionIsRight(*l1, *l2, *tipo);
-        if(!ladoCerto) goto inputError;
-        if(distancia > 2) goto inputError;
-        if(distancia > 1){
-            int comeu = verificarSeComeu(jogador, adversario, *l1, *c1, *l2, *c2);
-            if(!comeu) goto inputError;
+        if(result == 0) printf(BOLD("\nInput inválido, tente novamente\n"));
+    }while(result == 0);
+    free(tipo);
+    
+    
+}
+
+int verifyIfIsDama(char tipo)
+{
+    if(tipo == 'x' || tipo == 'o')
+        return 0;
+
+    if(tipo == 'X' || tipo ==  'O')
+        return 1;
+    
+    return -1;
+}
+
+int comerComDama(Jogador *jogador, Jogador *adversario, int l1, int c1, int l2, int c2)
+{
+    int result, localizacao;
+    int qtd = 0;
+    char tipo;
+    if(l1 < l2){
+        if(c1 < c2){
+            for(int y = l1, x = 1; y < l2; y++, c1++){
+                result = verifyIfPieceExists(*adversario, y, c1, &localizacao, &tipo);
+                if(result) qtd++;
+            }
+        }else{
+            for(int y = l1, x = 1; y < l2; y++, c1--){
+                result = verifyIfPieceExists(*adversario, y, c1, &localizacao, &tipo);
+                if(result) qtd++;
+            }
+        }
+        
+    }else{
+        if(c1 < c2){
+            for(int y = l2; y < l1; y++, c2--){
+                result = verifyIfPieceExists(*adversario, y,c2, &localizacao, &tipo);
+                if(result) qtd++;
+            }
+        }else{
+            for(int y = l2; y < l1; y++, c2++){
+                result = verifyIfPieceExists(*adversario, y, c2, &localizacao, &tipo);
+                if(result) qtd++;
+            }
         }
     }
     
+    if(qtd > 1) return 0;
+    if(qtd == 1){
+        removerPeca(adversario, localizacao);
+    }
+    return 1;
 }
+
+
 
 void removerPeca(Jogador *jogador, int linha){
     
@@ -120,7 +159,7 @@ void removerPeca(Jogador *jogador, int linha){
     free(jogador->pecas[linha]);
     jogador->qtd_pecas--;
 }
-int verificarSeComeu(Jogador *jogador, Jogador *adversario, int l1, int c1, int l2, int c2){
+int comerComPecaComum(Jogador *jogador, Jogador *adversario, int l1, int c1, int l2, int c2){
     int xM, yM, localizacao_peca;
     char tipo;
     xM = (c1 + c2) / 2;
@@ -178,5 +217,51 @@ int verifyIfUserWannaSave(char *input){
         return 1;
     }else{
         return 0;
+    }
+}
+
+void salvarJogo(Jogador player1, Jogador player2, char *nome_arquivo, int turno)
+{
+    FILE *f;
+    f = fopen(nome_arquivo, "w");
+    fprintf(f,"%s\n",player1.nome);
+    fprintf(f,"%s\n",player2.nome);
+    char matriz[8][8];
+    int y1, x1, y2, x2;
+    for (int i = 0; i < 8; i++) for (int j = 0; j <8; j++) matriz[i][j] = '-';
+    for(int linha = 0; linha < player1.qtd_pecas; linha ++){
+        y1 = player1.pecas[linha][0]; 
+        x1 = player1.pecas[linha][1];
+        matriz[y1][x1] = player1.pecas[linha][2];
+    }
+    for(int linha = 0; linha < player2.qtd_pecas; linha ++){
+        y2 = player2.pecas[linha][0];
+        x2 = player2.pecas[linha][1];
+        matriz[y2][x2] = player2.pecas[linha][2];
+    }
+
+    for(int linha = 7; linha >= 0; linha--)
+    {
+        for(int coluna = 0; coluna < 8; coluna++)
+        {
+            fprintf(f,"%c ",matriz[linha][coluna]);
+        }
+        fprintf(f,"\n");
+    }
+    fprintf(f,"\n%d", turno);
+    fclose(f);
+}
+
+
+void getInputDuringGame(const char *message, char* input, int turno, Jogador jogador, Jogador adversario){
+    getInputFromUser(message, input);
+    int result = strcmp(input, "salvar");
+    while(result == 0){
+        char nome[50];
+        getInputFromUser("Digite o nome do arquivo para salvar: ", nome);
+        salvarJogo(jogador, adversario,nome,turno);
+        printf("arquivo salvo com sucesso em %s\n", nome);
+        getInputFromUser(message, input);
+        result = strcmp(input, "salvar");
     }
 }
