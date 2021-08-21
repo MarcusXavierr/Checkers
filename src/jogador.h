@@ -12,6 +12,7 @@ typedef struct {
     char tipo_peca; //* C = clara, E = escura
 } Jogador;
 
+int validateInput(char *message, char *input, int *c1, int *c2, int *l1, int *l2, Jogador *jogador, Jogador *adversario, int *linha, char *tipo);
 void getInputFromUser(const char *message, char* input);
 void validateIfUserWannaQuit(char *input);
 int **criaMatriz(int m, int n);
