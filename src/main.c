@@ -12,29 +12,52 @@
 #include "menu.h"
 #include "jogo.h"
 
-
+int verifyIfGameEnded(Jogador jogador1, Jogador jogador2, int *contador);
 int main(int argc, char *argv[])
 {   
     //Informações úteis para todo o programa;
     Jogador jogador1, jogador2;
     //
-    jogador1.qtd_pecas = 12; jogador2.qtd_pecas = 12;
-    preencherMatriz(&jogador1.pecas, 'o');
-    preencherMatriz(&jogador2.pecas, 'x');
-    printMenu(&jogador1, &jogador2);
+    int rodada;
+    int contador_empate = 0;
+    printMenu(&jogador1, &jogador2, &rodada);
     desenharTabuleiro(jogador1, jogador2);
-    for(int i = 0; i < 8; i++)
+    while(!verifyIfGameEnded(jogador1, jogador2, &contador_empate))
     {
-        if(i % 2 == 0){
-            jogada(&jogador1, &jogador2);
-        }
-        else{
-            jogada(&jogador2, &jogador1);
+        if(rodada == 1){
+            jogada(&jogador1, &jogador2, rodada);
+            rodada = 2;
+        }else if(rodada == 2){
+            jogada(&jogador2, &jogador1, rodada);
+            rodada = 1;
         }
         desenharTabuleiro(jogador1, jogador2);
-    }
-    printf("%s\n%s\n",jogador1.nome, jogador2.nome); //* Só pra testar mesmo
-    
+    }    
     return 0;
 }
 
+int verifyIfGameEnded(Jogador jogador1, Jogador jogador2, int *contador)
+{
+    int damas_1, damas_2;
+    if(jogador1.qtd_pecas == 0 || jogador2.qtd_pecas == 0){
+        if(jogador1.qtd_pecas > jogador2.qtd_pecas){
+            printf(BOLD("\nO jogador %s venceu!\n"), jogador1.nome);
+        }else{
+            printf(BOLD("\nO jogador %s venceu!\n"), jogador2.nome);
+        }
+        return 1;
+    }
+    damas_1 = contarQtdDamas(jogador1);
+    damas_2 = contarQtdDamas(jogador2);
+    if(jogador1.qtd_pecas < 3 && jogador2.qtd_pecas < 3){
+        if(*contador == 5){
+            printf(BOLD("\nJogo empatado!\n"));
+            return 1;
+        }
+        int test1 = (damas_1 == 2 && damas_2 == 2) || (damas_1 == 1 && damas_2 == 2);
+        int test2 = (damas_1 == 2 && damas_2 == 1) || (damas_1 == 1 && damas_2 == 1);
+        if( test1 || test2) *contador = *contador + 1;
+    }
+    
+    return 0;
+}

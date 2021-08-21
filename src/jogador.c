@@ -68,12 +68,12 @@ int **criaMatriz(int m, int n)
     return matriz;
 }
 
-int validateInput(char *message, char *input, int *c1, int *c2, int *l1, int *l2, Jogador *jogador, Jogador *adversario, int *linha, char *tipo){
+int validateInput(char *message, char *input, int *c1, int *c2, int *l1, int *l2, Jogador *jogador, Jogador *adversario, int *linha, char *tipo, int turno){
     char Cl1, Cl2;
     int tmp;
     char adversario_type[1];
     // gambiarra pra fazer a validação contra o adverário funcionar, sorry
-    getInputDuringGame(message, input, 0, *jogador, *adversario);
+    getInputDuringGame(message, input, turno, *jogador, *adversario);
     int qtd_input = sscanf(input,"%c%d %c%d", &Cl1, c1, &Cl2, c2);
     if(qtd_input != 4) return 0; //* validate
     *l1 = switchChar(Cl1);
@@ -83,7 +83,8 @@ int validateInput(char *message, char *input, int *c1, int *c2, int *l1, int *l2
     if(*c1 == *c2) return 0; //* validate
     int exists = verifyIfPieceExists(*jogador, *l1, *c1, linha, tipo);
     int espacoOcupado = verifyIfPieceExists(*adversario, *l2, *c2, &tmp, adversario_type);
-    if(!exists || espacoOcupado) return 0; // * validate
+    int espacoOcupadoPorMim = verifyIfPieceExists(*jogador, *l2, *c2, &tmp,adversario_type);
+    if(!exists || espacoOcupado || espacoOcupadoPorMim) return 0; // * validate
     int distancia = calcularDistanciaMovimento(*l1, *c1, *l2, *c2);
     if(*tipo == 'x' || *tipo == 'o'){
         int ladoCerto = verifyIfDirectionIsRight(*l1, *l2, *tipo);
@@ -92,4 +93,13 @@ int validateInput(char *message, char *input, int *c1, int *c2, int *l1, int *l2
     }
 
     return 1;
+}
+
+
+int contarQtdDamas(Jogador jogador){
+    int count = 0;
+    for(int linha = 0; linha < jogador.qtd_pecas; linha ++){
+        if(jogador.pecas[linha][2] == 'X' || jogador.pecas[linha][2] == 'O') count++;
+    }
+    return count;
 }
