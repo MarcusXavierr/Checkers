@@ -46,18 +46,22 @@ void desenharTabuleiro(Jogador player1, Jogador player2)
     printf("\n");
 }
 
-void jogada(Jogador *jogador, Jogador *adversario)
+void jogada(Jogador *jogador, Jogador *adversario, int turno)
 {
     char message[50], input[50];
     int c1, c2, l1, l2, linha;
-    int pieceExists = 0;
     char *tipo = malloc(sizeof(char));
     *tipo = '\0';
     sprintf(message, "%s, é a sua vez: ", jogador->nome);
-    lerJogada(message, input, &c1, &c2, &l1, &l2, &linha, tipo, jogador, adversario);
+    lerJogada(message, input, &c1, &c2, &l1, &l2, &linha, tipo, jogador, adversario, turno);
+    if(*tipo == 'x'){
+        if(l2 == 7) virarDama(jogador,l1, c1);
+    }else if(*tipo == 'o'){
+        if(l2 == 0) virarDama(jogador, l1, c1);
+    }
     jogador->pecas[linha][0] = l2;
     jogador->pecas[linha][1] = c2;
-    
+    free(tipo);
 }
 
 int switchChar(char c) {
@@ -73,12 +77,12 @@ int switchChar(char c) {
 
 }
 
-void lerJogada(char *message, char *input, int *c1, int *c2, int *l1, int *l2, int *linha, char *tipo, Jogador *jogador, Jogador *adversario)
+void lerJogada(char *message, char *input, int *c1, int *c2, int *l1, int *l2, int *linha, char *tipo, Jogador *jogador, Jogador *adversario, int turno)
 {   
     int is_valid = 0, qtd_input;
     int result;
     do{
-        result = validateInput(message, input, c1, c2,l1,l2, jogador, adversario, linha, tipo);
+        result = validateInput(message, input, c1, c2,l1,l2, jogador, adversario, linha, tipo, turno);
         int isDama = verifyIfIsDama(*tipo);
         if(isDama == -1) result = 0;
         if(isDama == 0){
@@ -92,7 +96,6 @@ void lerJogada(char *message, char *input, int *c1, int *c2, int *l1, int *l2, i
 
         if(result == 0) printf(BOLD("\nInput inválido, tente novamente\n"));
     }while(result == 0);
-    free(tipo);
     
     
 }
@@ -159,6 +162,7 @@ void removerPeca(Jogador *jogador, int linha){
     free(jogador->pecas[linha]);
     jogador->qtd_pecas--;
 }
+
 int comerComPecaComum(Jogador *jogador, Jogador *adversario, int l1, int c1, int l2, int c2){
     int xM, yM, localizacao_peca;
     char tipo;
@@ -170,7 +174,8 @@ int comerComPecaComum(Jogador *jogador, Jogador *adversario, int l1, int c1, int
         return 1;
     }
     return 0;
-}   
+}
+
 int calcularDistanciaMovimento(int l1, int c1, int l2, int c2){
     int distancia, x, y;
     x = pow((c1 - c2), 2); 
@@ -224,8 +229,14 @@ void salvarJogo(Jogador player1, Jogador player2, char *nome_arquivo, int turno)
 {
     FILE *f;
     f = fopen(nome_arquivo, "w");
-    fprintf(f,"%s\n",player1.nome);
-    fprintf(f,"%s\n",player2.nome);
+    if(turno == 1){
+        fprintf(f,"%s\n",player1.nome);
+        fprintf(f,"%s\n",player2.nome);
+    }else if(turno == 2){
+        fprintf(f,"%s\n",player2.nome);
+        fprintf(f,"%s\n",player1.nome);
+    }
+    
     char matriz[8][8];
     int y1, x1, y2, x2;
     for (int i = 0; i < 8; i++) for (int j = 0; j <8; j++) matriz[i][j] = '-';
@@ -248,7 +259,7 @@ void salvarJogo(Jogador player1, Jogador player2, char *nome_arquivo, int turno)
         }
         fprintf(f,"\n");
     }
-    fprintf(f,"\n%d", turno);
+    fprintf(f,"%d", turno);
     fclose(f);
 }
 
@@ -260,8 +271,15 @@ void getInputDuringGame(const char *message, char* input, int turno, Jogador jog
         char nome[50];
         getInputFromUser("Digite o nome do arquivo para salvar: ", nome);
         salvarJogo(jogador, adversario,nome,turno);
-        printf("arquivo salvo com sucesso em %s\n", nome);
+        printf(BOLD("arquivo salvo com sucesso em %s\n"), nome);
         getInputFromUser(message, input);
         result = strcmp(input, "salvar");
     }
+}
+
+void virarDama(Jogador *jogador, int l1, int c1){
+    int linha;
+    char tipo;
+    verifyIfPieceExists(*jogador, l1,c1, &linha, &tipo);
+    jogador->pecas[linha][2] = tipo - 32;
 }
