@@ -19,17 +19,16 @@ int main(int argc, char *argv[])
     Jogador jogador1, jogador2;
     //
     int rodada;
+    char nome_arquivo[50] = "\0";
     int contador_empate = 0;
-    printMenu(&jogador1, &jogador2, &rodada);
+    printMenu(&jogador1, &jogador2, &rodada, nome_arquivo);
     desenharTabuleiro(jogador1, jogador2);
     while(!verifyIfGameEnded(jogador1, jogador2, &contador_empate))
     {
         if(rodada == 1){
-            jogada(&jogador1, &jogador2, rodada);
-            rodada = 2;
+            jogada(&jogador1, &jogador2, &rodada, nome_arquivo);
         }else if(rodada == 2){
-            jogada(&jogador2, &jogador1, rodada);
-            rodada = 1;
+            jogada(&jogador2, &jogador1, &rodada, nome_arquivo);
         }
         desenharTabuleiro(jogador1, jogador2);
     }    

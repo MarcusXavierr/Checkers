@@ -9,7 +9,7 @@
 #include "utils/colors.h"
 #include "jogador.h"
 #include "menu.h"
-void printMenu(Jogador *jogador1, Jogador *jogador2, int *rodada)
+void printMenu(Jogador *jogador1, Jogador *jogador2, int *rodada, char* nome_arquivo)
 {
     int escolha, qtd_jogadores;
     printf("Bem vindo ao jogo de Damas\nO que deseja fazer:\n\n");
@@ -35,8 +35,9 @@ void printMenu(Jogador *jogador1, Jogador *jogador2, int *rodada)
     }
     if(escolha == 2)
     {
-        char nome_arquivo[MAX_INPUT];
-        getInputFromUser("Digite o nome do arquivo: ", nome_arquivo);
+        if(nome_arquivo[0] == '\0'){
+            getInputFromUser("Digite o nome do arquivo: ", nome_arquivo);
+        }
         carregarJogo(jogador1, jogador2, nome_arquivo, rodada);
     }
 }
