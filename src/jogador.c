@@ -69,12 +69,12 @@ int **criaMatriz(int m, int n)
     return matriz;
 }
 
-int validateInput(char *message, char *input, int *c1, int *c2, int *l1, int *l2, Jogador *jogador, Jogador *adversario, int *linha, char *tipo, int turno){
+int validateInput(char *message, char *input, int *c1, int *c2, int *l1, int *l2, Jogador *jogador, Jogador *adversario, int *linha, char *tipo, int turno, char *nome_arquivo){
     char Cl1, Cl2;
     int tmp;
     char adversario_type[1];
     // gambiarra pra fazer a validação contra o adverário funcionar, sorry
-    getInputDuringGame(message, input, turno, *jogador, *adversario);
+    getInputDuringGame(message, input, turno, *jogador, *adversario, nome_arquivo);
     int qtd_input = sscanf(input,"%c%d %c%d", &Cl1, c1, &Cl2, c2);
     if(qtd_input != 4) return 0; //* validate
     *l1 = switchChar(Cl1);
@@ -86,13 +86,18 @@ int validateInput(char *message, char *input, int *c1, int *c2, int *l1, int *l2
     int espacoOcupado = verifyIfPieceExists(*adversario, *l2, *c2, &tmp, adversario_type);
     int espacoOcupadoPorMim = verifyIfPieceExists(*jogador, *l2, *c2, &tmp,adversario_type);
     if(!exists || espacoOcupado || espacoOcupadoPorMim) return 0; // * validate
+    int coeficiente = calcularCoeficienteAngular(*l1, *c1, *l2, *c2);
+    if(coeficiente != 1) return 0; // * validate
     int distancia = calcularDistanciaMovimento(*l1, *c1, *l2, *c2);
+    int podeComer = verificarSePedraPodeComer(*jogador, *adversario, *l1, *c1);
     if(*tipo == 'x' || *tipo == 'o'){
         int ladoCerto = verifyIfDirectionIsRight(*l1, *l2, *tipo);
-        if(!ladoCerto) return 0; //* validate
+        if(!podeComer){
+            if(!ladoCerto) return 0; //* validate
+        }
         if(distancia > 2) return 0; //* validate
     }
-    int podeComer = verificarSePedraPodeComer(*jogador, *adversario, *l1, *c1);
+    
     int soprou = pedraComumSoprou(distancia, podeComer, *l1, *c1, *l2, *c2, *adversario);
     if(soprou){
         printf(BOLD(RED("Você soprou!\n")));
