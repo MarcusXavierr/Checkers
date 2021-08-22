@@ -17,6 +17,8 @@ void getInputFromUser(const char *message, char* input);
 void validateIfUserWannaQuit(char *input);
 int **criaMatriz(int m, int n);
 int contarQtdDamas(Jogador jogador);
+int verificarSePedraPodeComer(Jogador jogador, Jogador adversario, int l1, int c1);
+int pedraComumSoprou(int distancia, int podeComer, int l1, int c1, int l2, int c2, Jogador adversario);
 void preencherMatriz(int ***matriz, char tipo);
 
 #endif

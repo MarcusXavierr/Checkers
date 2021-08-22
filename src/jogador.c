@@ -7,6 +7,7 @@
 #include "utils/constants.h"
 #include <stdio.h>
 #include <string.h>
+#include "utils/colors.h"
 #include <stdlib.h>
 void getInputFromUser(const char *message, char* input)
 {
@@ -91,7 +92,12 @@ int validateInput(char *message, char *input, int *c1, int *c2, int *l1, int *l2
         if(!ladoCerto) return 0; //* validate
         if(distancia > 2) return 0; //* validate
     }
-
+    int podeComer = verificarSePedraPodeComer(*jogador, *adversario, *l1, *c1);
+    int soprou = pedraComumSoprou(distancia, podeComer, *l1, *c1, *l2, *c2, *adversario);
+    if(soprou){
+        printf(BOLD(RED("Você soprou!\n")));
+        return 0;
+    }
     return 1;
 }
 
@@ -102,4 +108,43 @@ int contarQtdDamas(Jogador jogador){
         if(jogador.pecas[linha][2] == 'X' || jogador.pecas[linha][2] == 'O') count++;
     }
     return count;
+}
+
+int verificarSePedraPodeComer(Jogador jogador, Jogador adversario, int l1, int c1){
+    int tmp; char tmpc;
+    int l, c, x, y, l2, c2;
+    int pecaInimigaExiste = 0;
+    int possibilidades[] = {1,1, 1,-1, -1,1, -1,-1};
+    int possibilidades2[] = {2,2, 2,-2, -2,2, -2,-2};
+    int espacoVazioInimigo, meuEspacoVazio;
+    // TODO: verificar se existe uma peça inimiga em 
+    //* (y+1, x+1),(y+1, x-1),(y-1, x+1),(y-1, x-1)
+    for(y = 0, x = 1; y <= 6; y += 2, x += 2){
+        l = possibilidades[y] + l1;
+        c = possibilidades[x] + c1;
+        if(l > 7 || c > 7 || c < 0 || l < 0) continue;
+        pecaInimigaExiste = verifyIfPieceExists(adversario, l, c, &tmp, &tmpc);
+        if(pecaInimigaExiste){
+            l2 = possibilidades2[y] + l1;
+            c2 = possibilidades2[x] + c1;
+            if(l2 > 7 || c2 > 7 || c2 < 0 || l2 < 0) continue;
+            espacoVazioInimigo = verifyIfPieceExists(adversario, l2, c2, &tmp, &tmpc);
+            meuEspacoVazio = verifyIfPieceExists(jogador, l2, c2, &tmp, &tmpc);
+            if(espacoVazioInimigo == 0 && meuEspacoVazio == 0) return 1;
+        };
+    }
+    return 0;   
+}
+
+int pedraComumSoprou(int distancia, int podeComer, int l1, int c1, int l2, int c2, Jogador adversario){
+    int xM, yM, tmp;
+    char tmpc;
+    xM = (c1 + c2) / 2;
+    yM = (l1 + l2) / 2;
+    if(podeComer == 1 && distancia == 1) return 1;
+    if(podeComer == 1 && distancia == 2){
+        int exists = verifyIfPieceExists(adversario, yM, xM, &tmp, &tmpc);
+        if(exists == 0) return 1;
+    }
+    return 0;
 }
