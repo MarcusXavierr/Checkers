@@ -1,7 +1,13 @@
 #ifndef JOGO_H
 #define JOGO_H
 #include "jogador.h"
-#include "math.h"
+#include <math.h>
+#include <sys/time.h>
+#include <unistd.h>
+// struct    timeval {
+//   time_t    tv_sec ;   //used for seconds
+//   suseconds_t   tv_usec ;   //used for microseconds
+// };
 void desenharTabuleiro(Jogador player1, Jogador player2);
 int verifyIfIsDama(char tipo);
 int calcularDistanciaMovimento(int l1, int c1, int l2, int c2);
@@ -17,5 +23,6 @@ void getInputDuringGame(const char *message, char* input, int turno, Jogador jog
 int verifyIfDirectionIsRight(int l1, int l2, char type);
 int verifyIfPieceExists(Jogador jogador, int l1, int c1, int *result, char *type);
 int verifyIfUserWannaSave(char *input);
-int calcularCoeficienteAngular(int y1, int x1, int y2, int x2);
+float calcularCoeficienteAngular(int y1, int x1, int y2, int x2);
+void jogarComBot(int *c1, int *c2, int *l1, int *l2, int *linha, char *tipo, Jogador *jogador, Jogador *adversario, int turno, int *pecas_comidas);
 #endif

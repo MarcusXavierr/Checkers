@@ -48,18 +48,34 @@ void desenharTabuleiro(Jogador player1, Jogador player2)
 
 void jogada(Jogador *jogador, Jogador *adversario, int *turno, char *nome_arquivo)
 {
-    char message[50], input[50];
+    char message[50], input[50], peca;
+    if(*turno==1) peca = 'o';
+    else if(*turno==2) peca = 'x';
     int c1, c2, l1, l2, linha;
     int pecas_comidas = 0;
     char *tipo = malloc(sizeof(char));
     *tipo = '\0';
-    sprintf(message, "%s, é a sua vez: ", jogador->nome);
-    lerJogada(message, input, &c1, &c2, &l1, &l2, &linha, tipo, jogador, adversario, *turno, &pecas_comidas, nome_arquivo);
-    if(*tipo == 'x'){
-        if(l2 == 7) virarDama(jogador,l1, c1);
-    }else if(*tipo == 'o'){
-        if(l2 == 0) virarDama(jogador, l1, c1);
+    sprintf(message, "%s (%c), é a sua vez: ", jogador->nome, peca);
+    int is_bot = strcmp(jogador->nome, "myself");
+    if(is_bot == 0){
+        jogarComBot( &c1, &c2, &l1, &l2, &linha, tipo, jogador, adversario, *turno, &pecas_comidas);
+        sleep(1);
+    }else{
+        lerJogada(message, input, &c1, &c2, &l1, &l2, &linha, tipo, jogador, adversario, *turno, &pecas_comidas, nome_arquivo);
     }
+    
+    if(*tipo == 'x'){
+        if(l2 == 7) {
+            virarDama(jogador,l1, c1);
+            printf("Parabéns %s, você conseguiu uma dama!\n", jogador->nome);
+        }
+    }else if(*tipo == 'o'){
+        if(l2 == 0) {
+            virarDama(jogador, l1, c1);
+            printf("Parabéns %s, você conseguiu uma dama!\n", jogador->nome);
+        }
+    }
+
     jogador->pecas[linha][0] = l2;
     jogador->pecas[linha][1] = c2;
     free(tipo);
@@ -92,9 +108,14 @@ void lerJogada(char *message, char *input, int *c1, int *c2, int *l1, int *l2, i
     int is_valid, qtd_input;
     int result;
     do{
-        result = validateInput(message, input, c1, c2,l1,l2, jogador, adversario, linha, tipo, turno, nome_arquivo);
+        getInputDuringGame(message, input, turno, *jogador, *adversario, nome_arquivo);
+        result = validateInput(input, c1, c2,l1,l2, jogador, adversario, linha, tipo, turno, nome_arquivo);
         if(result == 0) {
             printf(BOLD("\nInput inválido, tente novamente\n"));
+            continue;
+        }
+        if(result == -1) {
+            printf(BOLD(RED("Você soprou! Tente novamente\n")));
             continue;
         }
         int isDama = verifyIfIsDama(*tipo);
@@ -109,7 +130,7 @@ void lerJogada(char *message, char *input, int *c1, int *c2, int *l1, int *l2, i
         }
 
         if(result == 0 || is_valid == 0) printf(BOLD("\nInput inválido, tente novamente\n"));
-    }while(result == 0 || is_valid == 0);
+    }while(result == 0 || is_valid == 0 || result == -1);
     
     
 }
@@ -303,8 +324,74 @@ void virarDama(Jogador *jogador, int l1, int c1){
 }
 
 
-int calcularCoeficienteAngular(int y1, int x1, int y2, int x2){
-    int coeficiente = (y1 - y2) / (x1 - x2);
-    coeficiente = abs(coeficiente);
+float calcularCoeficienteAngular(int y1, int x1, int y2, int x2){
+    float coeficiente = (float)(y1 - y2) / ((float)x1 - x2);
+    coeficiente = fabs(coeficiente);
     return coeficiente;
+}
+
+void jogarComBot(int *c1, int *c2, int *l1, int *l2, int *linha, char *tipo, Jogador *jogador, Jogador *adversario, int turno, int *pecas_comidas){
+    char input[20];
+    char nome_arquivo[20];
+    int result, is_valid;
+    int tentativas = 0;
+    struct timeval tm;
+    do{
+        tentativas++;
+        gettimeofday(&tm, NULL);
+        srand(tm.tv_usec + tentativas);
+        int line = rand() % ((jogador->qtd_pecas - 1) + 1 - 0) + 0;
+        char cL1 = convertNumToChar(jogador->pecas[line][0]);
+        int nC1 = jogador->pecas[line][1] + 1;
+        int tmp = ( rand() % (7 + 1 - 0) + 0 );
+        char cL2 = convertNumToChar(tmp);
+        int nC2 = (rand() % (7 + 1 - 0) + 0) + 1;
+        sprintf(input, "%c%d %c%d", cL1, nC1, cL2, nC2);
+        result = validateInput(input, c1, c2,l1,l2, jogador, adversario, linha, tipo, turno, nome_arquivo );
+        if(result != 1) continue;
+        int isDama = verifyIfIsDama(*tipo);
+        if(isDama == -1) is_valid = 0;
+        if(isDama == 0){
+            if(calcularDistanciaMovimento(*l1, *c1, *l2, *c2) == 2){
+                is_valid = comerComPecaComum(jogador, adversario, *l1, *c1, *l2, *c2, pecas_comidas);
+            }
+        }
+        else if(isDama == 1){
+            is_valid = comerComDama(jogador, adversario, *l1, *c1, *l2, *c2, pecas_comidas);
+        }
+        if(is_valid == 1) return;
+        
+    }while(tentativas < 20000);
+
+
+    for(int line = 0; line < jogador->qtd_pecas; line++){
+        char cL1 = convertNumToChar(jogador->pecas[line][0]);
+        int nC1 = jogador->pecas[line][1] + 1;
+        for(int y = 0; y < 8; y++){
+            for(int x = 0; x < 8; x++){
+                char cL2 = convertNumToChar(y);
+                int nC2 = x + 1;
+                sprintf(input, "%c%d %c%d", cL1, nC1, cL2, nC2);
+                
+                result = validateInput(input, c1, c2,l1,l2, jogador, adversario, linha, tipo, turno, nome_arquivo );
+                if(result != 1) continue;
+                // printf("%s\n", input);
+                int isDama = verifyIfIsDama(*tipo);
+                if(isDama == -1) is_valid = 0;
+                if(isDama == 0){
+                    if(calcularDistanciaMovimento(*l1, *c1, *l2, *c2) == 2){
+                        is_valid = comerComPecaComum(jogador, adversario, *l1, *c1, *l2, *c2, pecas_comidas);
+                    }else if(calcularDistanciaMovimento(*l1, *c1, *l2, *c2) == 1){
+                        is_valid = 1;
+                    }
+                }
+                else if(isDama == 1){
+                    is_valid = comerComDama(jogador, adversario, *l1, *c1, *l2, *c2, pecas_comidas);
+                }
+                if(is_valid == 1) return;
+            }
+        }
+    }
+    
+    
 }
