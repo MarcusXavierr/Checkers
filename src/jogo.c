@@ -48,7 +48,7 @@ void desenharTabuleiro(Jogador player1, Jogador player2)
 
 void jogada(Jogador *jogador, Jogador *adversario, int *turno, char *nome_arquivo)
 {
-    char message[50], input[50], peca;
+    char message[100], input[50], peca;
     if(*turno==1) peca = 'o';
     else if(*turno==2) peca = 'x';
     int c1, c2, l1, l2, linha;
