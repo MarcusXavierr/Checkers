@@ -65,7 +65,7 @@ void jogada(Jogador *jogador, Jogador *adversario, int *turno, char *nome_arquiv
     int is_bot = strcmp(jogador->nome, "myself");
     if(is_bot == 0){
         jogarComBot( &c1, &c2, &l1, &l2, &linha, tipo, jogador, adversario, *turno, &pecas_comidas);
-        usleep(650000);
+        usleep(550000);
     }else{
         lerJogada(message, input, &c1, &c2, &l1, &l2, &linha, tipo, jogador, adversario, *turno, &pecas_comidas, nome_arquivo);
     }
