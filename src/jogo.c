@@ -41,8 +41,10 @@ void desenharTabuleiro(Jogador player1, Jogador player2)
                 }
             }
         }
+        printf(" %c", c);
         printf("\n");
     }
+    printf("   1  2  3  4  5  6  7  8\n");
     printf("\n");
 }
 
