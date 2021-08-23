@@ -1,3 +1,7 @@
+//20.2.4002
+//Marcus Vinicius Pereira Xavier
+//Turma 32
+
 #include "utils/colors.h"
 #include "jogo.h"
 #include <stdio.h>

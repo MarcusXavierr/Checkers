@@ -1,3 +1,7 @@
+//20.2.4002
+//Marcus Vinicius Pereira Xavier
+//Turma 32
+
 #ifndef JOGO_H
 #define JOGO_H
 #include "jogador.h"
