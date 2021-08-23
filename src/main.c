@@ -2,12 +2,11 @@
 //Marcus Vinicius Pereira Xavier
 //Turma 32
 
+#include "utils/colors.h"
 #include <stdio.h>
 #include <stdlib.h>
-// #include <ctype.h>
 #include <string.h>
 #include "main.h"
-#include "utils/colors.h"
 #include "jogador.h"
 #include "menu.h"
 #include "jogo.h"
@@ -49,7 +48,7 @@ int verifyIfGameEnded(Jogador jogador1, Jogador jogador2, int *contador)
     damas_1 = contarQtdDamas(jogador1);
     damas_2 = contarQtdDamas(jogador2);
     if(jogador1.qtd_pecas < 3 && jogador2.qtd_pecas < 3){
-        if(*contador == 5){
+        if(*contador == 10){
             printf(BOLD("\nJogo empatado!\n"));
             return 1;
         }

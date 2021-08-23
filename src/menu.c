@@ -60,7 +60,7 @@ void carregarJogo(Jogador *jogador1, Jogador *jogador2, char *nome_arquivo, int 
     //Jogador1 tem peças do tipo 'o' ou 'O', e jogador2 tem peças 'x' ou 'X'
     FILE *f = fopen(nome_arquivo, "r");
     if(f == NULL){
-        printf("Erro ao ler o arquivo!\n");
+        printf(BOLD(RED("Erro ao ler o arquivo!\nDigite o nome de um arquivo que existe\n")));
         exit(1);
     }
     jogador1->pecas = criaMatriz(12, 3); //Primeiro eu crio um matriz q tem 12 peças e dps vou diminuindo caso leia menos peças
