@@ -146,7 +146,7 @@ int pedraComumSoprou(int distancia, int podeComer, int l1, int c1, int l2, int c
     xM = (c1 + c2) / 2;
     yM = (l1 + l2) / 2;
     if(podeComer == 1 && distancia == 1) return 1;
-    if(podeComer == 1 && distancia == 2){
+    if(podeComer == 1 && distancia >= 2){
         int exists = verifyIfPieceExists(adversario, yM, xM, &tmp, &tmpc);
         if(exists == 0) return 1;
     }
