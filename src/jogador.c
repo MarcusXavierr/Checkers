@@ -72,7 +72,9 @@ int **criaMatriz(int m, int n)
 int validateInput(char *input, int *c1, int *c2, int *l1, int *l2, Jogador *jogador, Jogador *adversario, int *linha, char *tipo, int turno, char *nome_arquivo){
     char Cl1, Cl2;
     int tmp;
-    char adversario_type[1];    
+    char adversario_type[1];
+    // gambiarra pra fazer a validação contra o adverário funcionar, sorry
+    
     int qtd_input = sscanf(input,"%c%d %c%d", &Cl1, c1, &Cl2, c2);
     if(qtd_input != 4) return 0; //* validate
     *l1 = switchChar(Cl1);
@@ -144,7 +146,7 @@ int pedraComumSoprou(int distancia, int podeComer, int l1, int c1, int l2, int c
     xM = (c1 + c2) / 2;
     yM = (l1 + l2) / 2;
     if(podeComer == 1 && distancia == 1) return 1;
-    if(podeComer == 1 && distancia >= 2){
+    if(podeComer == 1 && distancia == 2){
         int exists = verifyIfPieceExists(adversario, yM, xM, &tmp, &tmpc);
         if(exists == 0) return 1;
     }
