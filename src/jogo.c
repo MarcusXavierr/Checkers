@@ -55,13 +55,14 @@ void jogada(Jogador *jogador, Jogador *adversario, int *turno, char *nome_arquiv
         peca = 'o';
     else if (*turno == 2)
         peca = 'x';
+
     int c1, c2, l1, l2, linha;
     int pecas_comidas = 0;
     char *tipo = malloc(sizeof(char));
     *tipo = '\0';
     sprintf(message, "%s (%c), é a sua vez: ", jogador->nome, peca);
-    int is_bot = (strcmp(jogador->nome, "bot1") || strcmp(jogador->nome, "bot2"));
-    if (is_bot == 0) {
+    int is_bot = (!strcmp(jogador->nome, "bot1") || !strcmp(jogador->nome, "bot2"));
+    if (is_bot) {
         jogarComBot(&c1, &c2, &l1, &l2, &linha, tipo, jogador, adversario, *turno, &pecas_comidas);
         usleep(550000);
     } else {
