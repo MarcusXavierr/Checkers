@@ -38,3 +38,4 @@ After running ```make``` on terminal you will see the messages of compilation an
 ![](gifs/gamebot-2.gif)
 
 
+![](gifs/gamebot3.gif)
