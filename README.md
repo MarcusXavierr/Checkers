@@ -8,7 +8,7 @@ One of the biggest challenges of the project was making the computer play alone,
 
 ### P.s.: The game currently is on Portuguese, fell free to translate it to any language you want
 ## TODO
-- [ ] Translate the game for English
+- [ ] Translate the game to English
 - [ ] Create a makefile compatible with windows
 
 ## Installation
@@ -21,7 +21,7 @@ make
 
 ## Usage
 After running ```make``` on terminal you will see the messages of compilation and the game will run.
-**You can choose play alone with computer or play with other friend. You can use the commands "salvar" to save the state of the current game into a backup file. To quit the game just type "sair" on terminal anywhere**
+**You can choose play alone with the computer or play with other friend. You can use the commands "salvar" to save the state of the current game into a backup file. To quit the game just type "sair" on terminal anywhere**
 
 ![](gifs/newgame.gif)
 
