@@ -21,11 +21,11 @@ make
 
 ## Usage
 After running ```make``` on terminal you will see the messages of compilation and the game will run.
-**You can choose play alone with computer of play with other friend. You can use the commands "salvar" to save the state of the current game into a backup file. To quit the game, just type "sair" on terminal anywhere**
+**You can choose play alone with computer or play with other friend. You can use the commands "salvar" to save the state of the current game into a backup file. To quit the game just type "sair" on terminal anywhere**
 
 ![](gifs/newgame.gif)
 
-**And you can load this backup file and continue the game where you left off**
+**And you can continue the game from where you saved**
 
 ![](gifs/loadgame.gif)
 
